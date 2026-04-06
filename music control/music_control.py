@@ -3,6 +3,8 @@ from pynput.keyboard import Key,Controller
 import argparse
 import random
 import re
+import pymorphy3
+from nltk.util import ngrams
 from rich.console import Console
 from rich.panel import Panel
 from rich.live import Live
@@ -130,46 +132,52 @@ class LLMResponder():
         return self.history
 
 class IntentDetector():
-    def __init__(self):
+    def __init__(self, morph: pymorphy3.MorphAnalyzer):
         self.INTENTS = {
             "next_track": [
-                "следующий", "след", "next", "скип", "пропусти", "дальше", 
-                "включи другой", "переключи", "перемотай вперед", "не нравится", 
-                "давай другое", "skip", "forward"
+                ("следующий",), ("след",), ("next",), ("скип",), ("пропусти",), ("дальше",),
+                ("включи", "другой"), ("переключи",), ("перемотай", "вперед"), ("не", "нравится"),
+                ("давай", "другое"), ("skip",), ("forward",)
             ],
             "prev_track": [
-                "предыдущий", "пред", "previous", "назад", "верни", 
-                "прошлый трек", "повтори прошлое", "отмотай назад", "back"
+                ("предыдущий",), ("пред",), ("previous",), ("назад",), ("верни",),
+                ("прошлый", "трек"), ("повтори", "прошлое"), ("отмотай", "назад"), ("back",)
             ],
             "replay": [
-                "заново", "с начала", "повтори", "еще раз", "с самого начала", "replay"
+                ("заново",), ("с", "начала"), ("повтори",), ("еще", "раз"), 
+                ("с", "самого", "начала"), ("replay",)
             ],
             "pause": [
-                "пауза", "стоп", "останови", "хватит", "замри", "pause", "stop", 
-                "тишина", "выключи музыку", "прекрати", "паузу"
+                ("пауза",), ("стоп",), ("останови",), ("хватит",), ("замри",), ("pause",), 
+                ("stop",), ("тишина",), ("выключи", "музыку"), ("прекрати",)
             ],
             "resume": [
-                "продолжи", "играй", "play", "плей", "запусти", "сними с паузы", 
-                "включи обратно", "resume", "go"
+                ("продолжи",), ("играй",), ("play",), ("плей",), ("запусти",), 
+                ("сними", "с", "паузы"), ("включи", "обратно"), ("resume",), ("go",)
             ],
             "volume_up": [
-                "громче", "прибавь", "добавь звука", "тихо", "плохо слышно", 
-                "увеличь громкость", "louder", "up"
+                ("громче",), ("прибавь",), ("добавь", "звука"), ("тихо",), 
+                ("плохо", "слышно"), ("увеличь", "громкость"), ("louder",), ("up",)
             ],
             "volume_down": [
-                "тише", "убавь", "сделай потише", "очень громко", "приглуши", 
-                "снизь громкость", "softer", "down"
+                ("тише",), ("убавь",), ("сделай", "потише"), ("очень", "громко"), 
+                ("приглуши",), ("снизь", "громкость"), ("softer",), ("down",)
             ]
         }
+        self.morph = morph
     def detect_intents(self, user_input: str) -> list[str]:
         INTENTS = self.INTENTS
         words = re.findall(r'\w+', user_input.lower())
-        
+        words_to_process = [self.morph.parse(word)[0].normal_form for word in words]
         detected_intents = []
+        ngrams_of_words = ()
         
+        for i in range(1,4):
+            ngrams_of_words += tuple(ngrams(words_to_process,i))
+            
         for intent, keywords in INTENTS.items():
-            for keyword in sorted(keywords, key=len, reverse=True):
-                if any(word.startswith(keyword) for word in words) and (intent not in detected_intents):
+            for keyword in keywords:
+                if (keyword in ngrams_of_words) and (intent not in detected_intents):
                     detected_intents.append(intent)
                     break
         
@@ -196,14 +204,14 @@ class ActionExecutor():
             if action: 
                 action()
 
-class JarvisASiM(): # Jarvis Agent, specializes in music
-    def __init__(self, model: str, music: Music):  
+class JarvisCore(): # Jarvis Agent, specializes in music
+    def __init__(self, model: str, music: Music, morph: pymorphy3.MorphAnalyzer):  
         self.music = music
         
         self.history = []
         
         self.LLMResponder = LLMResponder(model,self.history)
-        self.IntentDetector = IntentDetector()
+        self.IntentDetector = IntentDetector(morph)
         self.ActionExecutor = ActionExecutor(music)
         
     def handle_input(self):
@@ -246,7 +254,8 @@ def main():
         
     
     music = Music()
-    ollama = JarvisASiM(model = model, music = music)
+    morph = pymorphy3.MorphAnalyzer()
+    ollama = JarvisCore(model = model, music = music, morph = morph)
     parser = argparse.ArgumentParser()
     
     subparsers = parser.add_subparsers(dest="command", help='Available commands')
