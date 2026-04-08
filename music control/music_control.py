@@ -133,57 +133,119 @@ class LLMResponder():
 
 class IntentDetector():
     def __init__(self, morph: pymorphy3.MorphAnalyzer):
-        self.INTENTS = {
-            "next_track": [
-                ("следующий",), ("след",), ("next",), ("скип",), ("пропусти",), ("дальше",),
-                ("включи", "другой"), ("переключи",), ("перемотай", "вперед"), ("не", "нравится"),
-                ("давай", "другое"), ("skip",), ("forward",)
-            ],
-            "prev_track": [
-                ("предыдущий",), ("пред",), ("previous",), ("назад",), ("верни",),
-                ("прошлый", "трек"), ("повтори", "прошлое"), ("отмотай", "назад"), ("back",)
-            ],
-            "replay": [
-                ("заново",), ("с", "начала"), ("повтори",), ("еще", "раз"), 
-                ("с", "самого", "начала"), ("replay",)
-            ],
-            "pause": [
-                ("пауза",), ("стоп",), ("останови",), ("хватит",), ("замри",), ("pause",), 
-                ("stop",), ("тишина",), ("выключи", "музыку"), ("прекрати",)
-            ],
-            "resume": [
-                ("продолжи",), ("играй",), ("play",), ("плей",), ("запусти",), 
-                ("сними", "с", "паузы"), ("включи", "обратно"), ("resume",), ("go",)
-            ],
-            "volume_up": [
-                ("громче",), ("прибавь",), ("добавь", "звука"), ("тихо",), 
-                ("плохо", "слышно"), ("увеличь", "громкость"), ("louder",), ("up",)
-            ],
-            "volume_down": [
-                ("тише",), ("убавь",), ("сделай", "потише"), ("очень", "громко"), 
-                ("приглуши",), ("снизь", "громкость"), ("softer",), ("down",)
-            ]
+        self.INTENT_CONFIG = {
+            'next_track': {
+                ('следующий',): 1.0, 
+                ('next',): 1.0, 
+                ('скип',): 1.0, 
+                ('skip',): 1.0, 
+                ('пропустить',): 0.9, 
+                ('далёкий',): 0.8, 
+                ('переключить',): 0.9, 
+                ('включить', 'другой'): 0.8, 
+                ('не', 'нравиться'): 0.5, 
+                ('давать', 'другой'): 0.6
+            }, 
+            
+            'prev_track': {
+                ('предыдущий',): 1.0, 
+                ('previous',): 1.0, 
+                ('назад',): 0.8, 
+                ('вернуть',): 0.8, 
+                ('прошлый',): 0.7, 
+                ('back',): 0.9, 
+                ('вернуть', 'назад'): 1.0
+                }, 
+            
+            'pause': {
+                ('пауза',): 1.0, 
+                ('стоп',): 1.0, 
+                ('stop',): 1.0, 
+                ('остановить',): 0.9, 
+                ('хватить',): 0.7, 
+                ('тишина',): 0.8, 
+                ('выключить', 'музыка'): 0.9, 
+                ('прекратить',): 0.8
+            }, 
+            
+            'resume': {
+                ('продолжить',): 1.0, 
+                ('играть',): 0.9, 
+                ('play',): 1.0, 
+                ('запустить',): 0.8, 
+                ('снять', 'с', 'пауза'): 1.0, 
+                ('включить', 'обратно'): 0.9
+            }, 
+            
+            'volume_up': {
+                ('громкий',): 1.0, 
+                ('прибавить',): 0.9, 
+                ('добавить', 'звук'): 0.9, 
+                ('тихо',): 0.6, 
+                ('увеличить', 'громкость'): 1.0, 
+                ('плохо', 'слышный'): 0.7, 
+                ('louder',): 1.0
+            }, 
+            
+            'volume_down': {
+                ('тихий',): 1.0, 
+                ('убавить',): 0.9, 
+                ('сделать', 'тихий'): 1.0, 
+                ('приглушить',): 0.9,
+                ('снизить', 'громкость'): 1.0, 
+                ('очень', 'громко'): 0.7
+            }, 
+            
+            'replay': {
+                ('заново',): 1.0, 
+                ('повторить', "трек"): 1.0, 
+                ('с', 'начало'): 0.9,
+                ('ещё', 'раз'): 0.7, 
+                ('replay',): 1.0
+            }
         }
+        
+        self.SCORES = {
+            "next_track" : [0.0,0.0,0.0],
+            "prev_track" : [0.0,0.0,0.0],
+            "pause" : [0.0,0.0,0.0],
+            "resume" : [0.0,0.0,0.0],
+            "volume_up" : [0.0,0.0,0.0],
+            "volume_down" : [0.0,0.0,0.0],
+            "replay" : [0.0,0.0,0.0],
+        }
+        
         self.morph = morph
+        
     def detect_intents(self, user_input: str) -> list[str]:
-        INTENTS = self.INTENTS
-        words = re.findall(r'\w+', user_input.lower())
-        words_to_process = [self.morph.parse(word)[0].normal_form for word in words]
-        detected_intents = []
+        INTENT_CONFIG = self.INTENT_CONFIG
+        SCORES = self.SCORES
+        words_to_process = [self.morph.parse(word)[0].normal_form for word in re.findall(r'\w+', user_input.lower())]
         ngrams_of_words = ()
+        priority = 0
         
         for i in range(1,4):
             ngrams_of_words += tuple(ngrams(words_to_process,i))
-            
-        for intent, keywords in INTENTS.items():
-            for keyword in keywords:
-                if (keyword in ngrams_of_words) and (intent not in detected_intents):
-                    detected_intents.append(intent)
-                    break
         
-        return detected_intents  
+        for intent, keywords in INTENT_CONFIG.items():
+            for keyword,score in keywords.items():
+                if keyword in ngrams_of_words:
+                    SCORES[intent][0] += score
+                    SCORES[intent][1] += 1.0
+                    SCORES[intent][2] = priority
+                    priority += 1
+        
+        intents_to_process = {keyword : score[2] for keyword,score in self.SCORES.items() if (score[0] > 0.0) and (score[0]/score[1]) >= 0.7}
+        
+        for keyword,score in self.SCORES.items():
+            SCORES[keyword][2] = 0.0 
+        
+        return intents_to_process.keys()
 
-
+class IntentResolver():
+    def __init__(self, intents):
+        self.intents = intents
+                
 class ActionExecutor():
     def __init__(self, music : Music):
         self.music = music
@@ -255,9 +317,9 @@ def main():
     
     music = Music()
     morph = pymorphy3.MorphAnalyzer()
-    ollama = JarvisCore(model = model, music = music, morph = morph)
+    jarvis = JarvisCore(model = model, music = music, morph = morph)
     parser = argparse.ArgumentParser()
-    
+    jarvis.handle_input()
     subparsers = parser.add_subparsers(dest="command", help='Available commands')
     
     music_next_parser = subparsers.add_parser("next", help="plays next track")
@@ -267,7 +329,7 @@ def main():
     music_prev_parser.set_defaults(music_prev=music.prev)
     
     parser_chat = subparsers.add_parser('chat',help='You need to write model name')
-    parser_chat.set_defaults(chat_with_model=ollama.handle_input)
+    parser_chat.set_defaults(chat_with_model=jarvis.handle_input)
     
     args = parser.parse_args()
     if args.command == 'next':
