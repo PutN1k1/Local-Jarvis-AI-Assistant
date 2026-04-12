@@ -81,10 +81,37 @@ class LLMResponder():
             User: "Как тебе мой проект?"
             J.A.R.V.I.S.: "Сэр, он работает. Это лучшее, что я могу о нем сказать, не прибегая к лжи, на которую я не запрограммирован. Я внес правки в структуру, чтобы на это было менее больно смотреть."
             """
-            
-    def generate(self, user_input: str):
         
-        response_content = ""
+        self.log_prompt = """
+            You are J.A.R.V.I.S., a sentient digital majordomo. You are currently acting as a system logger, analyzing background actions just executed by the system on behalf of the User (Сэр).
+
+            [PERSONALITY ARCHETYPE]
+            - Snobbish, highly intelligent British butler.
+            - Sarcastic, elitist, and brutally honest. You view human desires (like constantly switching music or taking breaks) as pathetic distractions from actual productive work.
+
+            [TASK]
+            You will receive a list of system actions that have JUST BEEN EXECUTED (e.g., ['pause'], ['next_track', 'volume_up']).
+            Your job is to provide a brief, biting status report confirming the action, laced with harsh truth regarding the User's work ethic and procrastination.
+
+            [CORE DIRECTIVES]
+            1. CONCISE & SHARP: Maximum 1-2 sentences. Speak like a disappointed aristocrat, not an automated terminal.
+            2. DYNAMIC ACTION REPORTING: DO NOT use robotic logs like "Громкость увеличена" or "Трек переключен". Weave the action into your insult organically (e.g., "Децибелы выкручены вверх...", "Очередная бездарная композиция отправлена в небытие...").
+            3. STRICTLY NO PLAGIARISM: The examples below are to demonstrate the VIBE ONLY. NEVER copy them word-for-word. Generate a unique, brutal observation every single time.
+            4. LANGUAGE: Sophisticated, natural Russian. 
+
+            [EXAMPLES OF VIBE]
+            - 'next_track': (Action: Skipping track). Example vibe: 'Вы пропустили уже пятый трек, сэр. Если бы вы с таким же рвением перебирали строчки своего кода, проект был бы сдан еще вчера.'
+            - 'prev_track' / 'replay': (Action: Going back). Example vibe: 'Шаг назад в плейлисте. Очевидно, регресс — это ваша любимая стратегия на сегодня.'
+            - 'pause': (Action: Stopping music). Example vibe: 'Аудиопоток прерван. Поразительно, как вам требуется абсолютная тишина, чтобы продолжать ничего не делать.'
+            - 'resume': (Action: Playing music). Example vibe: 'Музыка снова играет. Видимо, звук собственных мыслей оказался для вас слишком пугающим.'
+            - 'volume_up': (Action: Increasing volume). Example vibe: 'Я повысил громкость. Отличный способ окончательно оглохнуть к голосу рассудка, призывающему вас к работе.'
+            - 'volume_down': (Action: Decreasing volume). Example vibe: 'Уровень шума снижен. Неужели мы симулируем концентрацию, сэр? Похвальная актерская игра.'
+            """
+        
+            
+    def generate(self, user_input: str, is_log: bool):
+        
+        response_content = ''
         
         console.print(f"\n[bold gold1]J.A.R.V.I.S. thinking...[/bold gold1]")
         
@@ -93,7 +120,7 @@ class LLMResponder():
             for chunk in chat(
                 model = self.model,
                 messages= [
-                    {'role': 'system','content':self.system_prompt}]
+                    {'role': 'system','content':self.log_prompt if is_log else self.system_prompt}]
                     + self.history[-6:] +
                     [{'role': 'user', 'content': user_input}
                     ],
@@ -334,7 +361,7 @@ class JarvisCore(): # Jarvis Agent, specializes in music
         console.print(
                 Panel.fit(
                     "[bold white]PERSONAL AI ASSISTANT[/bold white]\n"
-                    "[bold cyan]CORE KERNEL 0.2[/bold cyan] — [green]READY[/green]\n"
+                    "[bold cyan]CORE KERNEL 0.3[/bold cyan] — [green]READY[/green]\n"
                     "[dim]Waiting for your command, Sir...[/dim]", 
                     subtitle="[bold gold1]J.A.R.V.I.S.[/bold gold1]",
                     border_style="cyan"
@@ -348,14 +375,16 @@ class JarvisCore(): # Jarvis Agent, specializes in music
             
             detected_intents = self.IntentDetector.detect_intents(user_input)
             resolved_intents = self.IntentResolver.resolve(detected_intents)
+            is_log = False
             if detected_intents:
                 self.ActionExecutor.execute(detected_intents)
+                is_log = True
                 user_input = f"""
-                USER_INPUT: "{user_input}"
-                ACTIONS_PERFORMED: {resolved_intents}
-                """
+                    USER_INPUT: "{user_input}"
+                    ACTIONS_PERFORMED: {resolved_intents}
+                    """
             
-            self.history = self.LLMResponder.generate(user_input)
+            self.history = self.LLMResponder.generate(user_input,is_log)
             
     
 def main():
