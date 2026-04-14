@@ -241,25 +241,16 @@ class IntentDetector():
             }
         }
         
-        # За что отвечает каждый индекс
-        # 0 - сумма point
-        # 1 - кол-во повторений, потом делим, чтобы найти среднее значение
-        # 2 - позиция в тексте
-        self.SCORES = {
-            "next_track" : [0.0,0.0,0.0],
-            "prev_track" : [0.0,0.0,0.0],
-            "pause" : [0.0,0.0,0.0],
-            "resume" : [0.0,0.0,0.0],
-            "volume_up" : [0.0,0.0,0.0],
-            "volume_down" : [0.0,0.0,0.0],
-            "replay" : [0.0,0.0,0.0],
-        }
-        
         self.morph = morph
         
     def detect_intents(self, user_input: str) -> list[str]:
         INTENT_CONFIG = self.INTENT_CONFIG
-        SCORES = self.SCORES
+        
+        # За что отвечает каждый индекс
+        # 0 - сумма point
+        # 1 - кол-во повторений, потом делим, чтобы найти среднее значение
+        # 2 - позиция в тексте
+        scores = {intent: [0.0, 0.0, 0.0] for intent in self.INTENT_CONFIG}
         
         # Поиск отдельных слов в тексте и их приведение в normal_form
         words_to_process = [self.morph.parse(word)[0].normal_form for word in re.findall(r'\w+', user_input.lower())]
@@ -273,15 +264,15 @@ class IntentDetector():
         for intent, keywords in INTENT_CONFIG.items():
             for keyword,score in keywords.items():
                 if keyword in ngrams_of_words:
-                    SCORES[intent][0] += score
-                    SCORES[intent][1] += 1.0
-                    SCORES[intent][2] = priority
+                    scores[intent][0] += score
+                    scores[intent][1] += 1.0
+                    scores[intent][2] = priority
                     priority += 1
         
-        intents_to_process = {keyword : score[2] for keyword,score in self.SCORES.items() if (score[0] > 0.0) and (score[0]/score[1]) >= 0.7}
+        intents_to_process = {keyword : score[2] for keyword,score in scores.items() if (score[0] > 0.0) and (score[0]/score[1]) >= 0.7}
         
-        for keyword,score in self.SCORES.items():
-            SCORES[keyword] = [0.0,0.0,0.0]
+        for keyword,score in scores.items():
+            scores[keyword] = [0.0,0.0,0.0]
         
         return intents_to_process
 
@@ -300,7 +291,7 @@ class IntentResolver():
             ('next_track', 'prev_track', 'replay')
         )
     
-    def resolve(self,detected_intents):
+    def resolve(self,detected_intents: dict[str,float]):
         verified_intents = []
         
         # Если intent ни в одном конфликте не участвует, то он валиден
@@ -339,7 +330,23 @@ class ActionExecutor():
             "volume_down": self.music.dec_volume
         }
         
+        self.PRIORITIES = {
+            # 1. Громкость — самый высокий приоритет (вопросы комфорта)
+            "volume_up": 10,
+            "volume_down": 10,
+
+            # 2. Навигация — определяем, ЧТО мы слушаем
+            "next_track": 20,
+            "prev_track": 20,
+            "replay": 20,
+
+            # 3. Состояние — определяем, ИГРАЕТ ЛИ оно в итоге
+            "pause": 30,
+            "resume": 30
+        }
+        
     def execute(self,received_intents: list[str]) -> None:
+        received_intents = sorted(received_intents,key = lambda intent: self.PRIORITIES.get(intent,99))
         for intent in received_intents:
             action = self.INTENT_ACTIONS.get(intent)
             if action: 
@@ -376,8 +383,8 @@ class JarvisCore(): # Jarvis Agent, specializes in music
             detected_intents = self.IntentDetector.detect_intents(user_input)
             resolved_intents = self.IntentResolver.resolve(detected_intents)
             is_log = False
-            if detected_intents:
-                self.ActionExecutor.execute(detected_intents)
+            if resolved_intents:
+                self.ActionExecutor.execute(resolved_intents)
                 is_log = True
                 user_input = f"""
                     USER_INPUT: "{user_input}"
