@@ -4,7 +4,7 @@ import argparse
 import random
 import re
 import pymorphy3
-from nltk.util import ngrams
+#from nltk.util import ngrams
 from rich.console import Console
 from rich.panel import Panel
 from rich.live import Live
@@ -150,129 +150,156 @@ class LLMResponder():
 
 class IntentDetector():
     def __init__(self, morph: pymorphy3.MorphAnalyzer):
+        self.WEIGHTS = {
+            "anchor": 1.0, 
+            "action": 0.8, 
+            "object": 0.6, 
+            "negation": -1.5
+        }
+        
         self.INTENT_CONFIG = {
             'next_track': {
-                ('следующий',): 1.0,
-                ('next',): 1.0,
-                ('скип',): 1.0,
-                ('skip',): 1.0,
-                ('пропустить',): 0.9,
-                ('переключить',): 0.9,
-                ('включить', 'другой'): 0.8,
-                ('не', 'нравиться'): 0.5,
-                ('давать', 'другой'): 0.6,
-                ('не', 'переключать'): -1.5,
-                ('не', 'надо', 'следующий'): -1.5,
-                ('нет', 'оставить'): -1.0
+                ('следующий',): self.WEIGHTS["anchor"],
+                ('next',): self.WEIGHTS["anchor"],
+                ('скип',): self.WEIGHTS["anchor"],
+                ('skip',): self.WEIGHTS["anchor"],
+                ('пропустить',): self.WEIGHTS["anchor"],
+                ('переключить',): self.WEIGHTS["anchor"],
+                ('включить', 'другой'): self.WEIGHTS["action"],
+                ('не', 'нравиться'): self.WEIGHTS["object"],
+                ('давать', 'другой'): self.WEIGHTS["object"],
+                ('не', 'переключать'): self.WEIGHTS["negation"],
+                ('не', 'надо', 'следующий'): self.WEIGHTS["negation"],
+                ('нет', 'оставить'): -1.0, # Оставлен литералом, так как выбивается из общей логики
             },
         
             'prev_track': {
-                ('предыдущий',): 1.0,
-                ('previous',): 1.0,
-                ('назад',): 0.8,
-                ('вернуть',): 0.8,
-                ('прошлый',): 0.7,
-                ('back',): 0.9, 
-                ('вернуть', 'назад'): 1.0,
-                ('не', 'возвращать'): -1.5,
-                ('не', 'назад'): -1.2
+                ('предыдущий',): self.WEIGHTS["anchor"],
+                ('previous',): self.WEIGHTS["anchor"],
+                ('назад',): self.WEIGHTS["action"],
+                ('вернуть',): self.WEIGHTS["action"],
+                ('прошлый',): self.WEIGHTS["object"],
+                ('back',): self.WEIGHTS["anchor"], 
+                ('вернуть', 'назад'): self.WEIGHTS["anchor"],
+                ('не', 'возвращать'): self.WEIGHTS["negation"],
+                ('не', 'назад'): -1.2,
             },
             
             'pause': {
-                ('пауза',): 1.0,
-                ('стоп',): 1.0, 
-                ('stop',): 1.0, 
-                ('остановить',): 0.9, 
-                ('хватить',): 0.7, 
-                ('тишина',): 0.8, 
-                ('выключить', 'музыка'): 0.9, 
-                ('прекратить',): 0.8, 
-                ('не', 'стоп'): -1.5, 
-                ('не', 'пауза'): -1.5, 
-                ('не', 'выключать'): -1.5, 
-                ('играть', 'далёкий'): -0.8
+                ('пауза',): self.WEIGHTS["anchor"],
+                ('стоп',): self.WEIGHTS["anchor"], 
+                ('stop',): self.WEIGHTS["anchor"], 
+                ('остановить',): self.WEIGHTS["anchor"], 
+                ('хватить',): self.WEIGHTS["object"], 
+                ('тишина',): self.WEIGHTS["action"], 
+                ('выключить', 'музыка'): self.WEIGHTS["anchor"], 
+                ('прекратить',): self.WEIGHTS["action"], 
+                ('не', 'стоп'): self.WEIGHTS["negation"], 
+                ('не', 'пауза'): self.WEIGHTS["negation"], 
+                ('не', 'выключать'): self.WEIGHTS["negation"], 
+                ('играть', 'далёкий'): -0.8,
             }, 
             
             'resume': {
-                ('продолжить',): 1.0, 
-                ('играть',): 0.9, 
-                ('play',): 1.0, 
-                ('запустить',): 0.8,
-                ('снять', 'с', 'пауза'): 1.0,
-                ('включить', 'обратно'): 0.9, 
-                ('не', 'включать'): -1.5, 
-                ('не', 'продолжать'): -1.5,
-                ('пусть', 'молчать'): -0.8    
+                ('продолжить',): self.WEIGHTS["anchor"], 
+                ('играть',): self.WEIGHTS["anchor"], 
+                ('play',): self.WEIGHTS["anchor"], 
+                ('запустить',): self.WEIGHTS["action"],
+                ('снять', 'с', 'пауза'): self.WEIGHTS["anchor"],
+                ('включить', 'обратно'): self.WEIGHTS["anchor"], 
+                ('не', 'включать'): self.WEIGHTS["negation"], 
+                ('не', 'продолжать'): self.WEIGHTS["negation"],
+                ('пусть', 'молчать'): -0.8,
             }, 
             
             'volume_up': {
-                ('громкий',): 1.0,
-                ('прибавить',): 0.9,
-                ('добавить', 'звук'): 0.9,
-                ('тихо',): 0.6,
-                ('увеличить', 'громкость'): 1.0,
-                ('плохо', 'слышный'): 0.7,
-                ('louder',): 1.0,
-                ('не', 'прибавлять'): -1.5,
+                ('громкий',): self.WEIGHTS["anchor"],
+                ('прибавить',): self.WEIGHTS["anchor"],
+                ('добавить', 'звук'): self.WEIGHTS["anchor"],
+                ('тихо',): self.WEIGHTS["object"],
+                ('увеличить', 'громкость'): self.WEIGHTS["anchor"],
+                ('плохо', 'слышный'): self.WEIGHTS["object"],
+                ('louder',): self.WEIGHTS["anchor"],
+                ('не', 'прибавлять'): self.WEIGHTS["negation"],
                 ('не', 'громко'): -1.2,
-                ('хватить', 'громкость'): -1.0
+                ('хватить', 'громкость'): -1.0,
             },
             
             'volume_down': {
-                ('тихий',): 1.0, 
-                ('убавить',): 0.9, 
-                ('сделать', 'тихий'): 1.0,
-                ('приглушить',): 0.9, 
-                ('снизить', 'громкость'): 1.0,
-                ('очень', 'громко'): 0.7, 
-                ('не', 'убавлять'): -1.5, 
+                ('тихий',): self.WEIGHTS["anchor"], 
+                ('уменьшить',): self.WEIGHTS["anchor"], 
+                ('убавить',): self.WEIGHTS["anchor"], 
+                ('сделать', 'тихий'): self.WEIGHTS["anchor"],
+                ('приглушить',): self.WEIGHTS["anchor"], 
+                ('снизить', 'громкость'): self.WEIGHTS["anchor"],
+                ('очень', 'громко'): self.WEIGHTS["object"], 
+                ('не', 'убавлять'): self.WEIGHTS["negation"], 
                 ('не', 'тихо'): -1.2,
-                ('оставить', 'громкость'): -0.8
+                ('оставить', 'громкость'): -0.8,
             }, 
             
             'replay': {
-                ('заново',): 1.0, 
-                ('повторить', 'трек'): 1.0, 
-                ('с', 'начало'): 0.9, 
-                ('ещё', 'раз'): 0.7, 
-                ('replay',): 1.0, 
-                ('не', 'повторять'): -1.5, 
-                ('не', 'надо', 'заново'): -1.5
+                ('заново',): self.WEIGHTS["anchor"], 
+                ('повторить', 'трек'): self.WEIGHTS["anchor"], 
+                ('с', 'начало'): self.WEIGHTS["anchor"], 
+                ('ещё', 'раз'): self.WEIGHTS["object"], 
+                ('replay',): self.WEIGHTS["anchor"], 
+                ('не', 'повторять'): self.WEIGHTS["negation"], 
+                ('не', 'надо', 'заново'): self.WEIGHTS["negation"],
             }
         }
         
+        # "Выворачиваем" INTENT_CONFIG для быстрого поиска по keyword
+        self.FLAT_CONFIG = {}
+        for intent, keywords in self.INTENT_CONFIG.items():
+            for keyword,weight in keywords.items():
+                self.FLAT_CONFIG[keyword] = {"intent": intent, "weight": weight}
+        
+        self.STOP_WORDS = {'пожалуйста', 'будь', 'добр', 'джарвис', 'хотеть', 'мочь', 'бы'}
+        
         self.morph = morph
-        
+    
+    def _get_decay_factor(self,index,length_of_user_input):
+        return max(0.4, 1.0 - ((length_of_user_input-index)*0.05))
+    
     def detect_intents(self, user_input: str) -> list[str]:
-        INTENT_CONFIG = self.INTENT_CONFIG
+        FLAT_CONFIG = self.FLAT_CONFIG
+        STOP_WORDS = self.STOP_WORDS
         
-        # За что отвечает каждый индекс
-        # 0 - сумма point
-        # 1 - кол-во повторений, потом делим, чтобы найти среднее значение
-        # 2 - позиция в тексте
-        scores = {intent: [0.0, 0.0, 0.0] for intent in self.INTENT_CONFIG}
+        # Поиск валидных слов в тексте и их приведение в normal_form
+        words_to_process = [
+            parsed_form 
+            for word in re.findall(r'\w+', user_input.lower()) 
+            if (parsed_form := self.morph.parse(word)[0].normal_form) not in STOP_WORDS
+        ]
         
-        # Поиск отдельных слов в тексте и их приведение в normal_form
-        words_to_process = [self.morph.parse(word)[0].normal_form for word in re.findall(r'\w+', user_input.lower())]
-        ngrams_of_words = ()
-        priority = 0
+        # Словарь: {ngrama: индекс_в_тексте}
+        user_ngrams = {}
+        total_words = len(words_to_process)
         
-        #Создаём ngrams(пары) слов, чтобы потом искать их в INTENT_CONFIG
-        for i in range(1,4):
-            ngrams_of_words += tuple(ngrams(words_to_process,i))
+        for n in range(1,4):
+            for i in range(total_words-n+1):
+                ngram = tuple(words_to_process[i:i+n])
+                
+                user_ngrams[ngram] = i
         
-        for intent, keywords in INTENT_CONFIG.items():
-            for keyword,score in keywords.items():
-                if keyword in ngrams_of_words:
-                    scores[intent][0] += score
-                    scores[intent][1] += 1.0
-                    scores[intent][2] = priority
-                    priority += 1
         
-        intents_to_process = {keyword : score[2] for keyword,score in scores.items() if (score[0] > 0.0) and (score[0]/score[1]) >= 0.7}
+        scores = {intent: 0.0 for intent in self.INTENT_CONFIG}
         
-        for keyword,score in scores.items():
-            scores[keyword] = [0.0,0.0,0.0]
+        for ngram, position in user_ngrams.items():
+            if ngram in FLAT_CONFIG:
+                match_data = FLAT_CONFIG[ngram]
+                intent = match_data["intent"]
+                weight = match_data["weight"]
+                
+                decay_factor = self._get_decay_factor(position,total_words)
+                scores[intent] += weight*decay_factor
+
+        intents_to_process = {
+            intent: score 
+            for intent, score in scores.items()
+            if score >= 0.4
+        }
         
         return intents_to_process
 
@@ -306,9 +333,9 @@ class IntentResolver():
         for conflict_group in self.CONFLICT_GROUPS:
             founded = ()
             # Нужно оптимизировать поиск, чтобы каждый раз не смотреть обработанные intents
-            for intent, position in detected_intents.items():
-                if (intent in conflict_group) and (not founded or founded[1] < position):
-                    founded = (intent,position)
+            for intent, score in detected_intents.items():
+                if (intent in conflict_group) and (not founded or founded[1] < score):
+                    founded = (intent,score)
             
             if founded:
                 verified_intents.append(founded[0])
