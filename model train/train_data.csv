@@ -1,0 +1,669 @@
+включи следующий трек;next_track
+давай следующий;next_track
+следующую песню включи;next_track
+скипни трек;next_track
+пропусти это;next_track
+дальше давай;next_track
+переключи песню;next_track
+го следующий трек;next_track
+не зашло, дальше;next_track
+давай другую песню;next_track
+смени трек;next_track
+переключи на другой;next_track
+скипни это пожалуйста;next_track
+пропускай;next_track
+next давай;next_track
+next track;next_track
+го дальше;next_track
+след трек включи;next_track
+давай следущую;next_track
+следующую пж;next_track
+скипни пж;next_track
+давай что нибудь другое;next_track
+поменяй песню;next_track
+другой трек включи;next_track
+не нравится;next_track
+дальше включи;next_track
+смена трека;next_track
+переключай;next_track
+скипни быстрее;next_track
+пропусти уже;next_track
+дальше музыку;next_track
+следующий бит;next_track
+вруби другой;next_track
+го другой трек;next_track
+меняй;next_track
+переключи музыку;next_track
+след трек давай;next_track
+скипай;next_track
+пропуск;next_track
+давай новый трек;next_track
+дальше трек;next_track
+следующий включай;next_track
+скип трек;next_track
+го следующую песню;next_track
+поставь другой трек;next_track
+переключи быстро;next_track
+дальше плиз;next_track
+смени быстрее;next_track
+давай че нить другое;next_track
+другую давай;next_track
+врубай следующий;next_track
+следующий биток;next_track
+скипни нафиг;next_track
+пропусти трек;next_track
+переключи пжл;next_track
+дальше че там;next_track
+следующий уже;next_track
+меняй трек;next_track
+го next;next_track
+давай next;next_track
+некст трек;next_track
+включи некст;next_track
+next pls;next_track
+дальше музон;next_track
+смена песни;next_track
+переключи трек плиз;next_track
+давай быстрее следующий;next_track
+скипни эту фигню;next_track
+другую включи;next_track
+поставь другую песню;next_track
+переключи композицию;next_track
+следующий трэк;next_track
+дальше ставь;next_track
+меняй песню уже;next_track
+пропусти песню;next_track
+скипни песню;next_track
+дальше трек пж;next_track
+давай смену;next_track
+переключи щас;next_track
+давай быстрее;next_track
+следующую ща;next_track
+го другой;next_track
+вруби следующий трек;next_track
+меняй уже;next_track
+переключи сейчас;next_track
+давай следующий бит;next_track
+пропусти сейчас;next_track
+скипни сейчас;next_track
+следующий давай уже;next_track
+другой уже включи;next_track
+давай сменим;next_track
+переключи немедленно;next_track
+следующий моментально;next_track
+врубай другой трек;next_track
+переключи на след;next_track
+давай уже следующий;next_track
+
+включи предыдущий трек;prev_track
+давай назад;prev_track
+верни прошлую песню;prev_track
+предыдущую включи;prev_track
+го назад;prev_track
+верни трек;prev_track
+назад трек;prev_track
+пред трек включи;prev_track
+давай предыдущую;prev_track
+верни что было;prev_track
+прошлый трек;prev_track
+включи прошлую;prev_track
+назад пожалуйста;prev_track
+верни назад пж;prev_track
+го прошлую песню;prev_track
+переключи назад;prev_track
+один трек назад;prev_track
+верни предыдущую песню;prev_track
+назад музыку;prev_track
+предыдущий бит;prev_track
+верни тот трек;prev_track
+вруби предыдущий;prev_track
+давай тот назад;prev_track
+верни обратно;prev_track
+назад давай;prev_track
+предыдущую пж;prev_track
+го назад трек;prev_track
+поставь прошлый трек;prev_track
+верни трек назад;prev_track
+предыдущую композицию;prev_track
+назад композицию;prev_track
+верни прошлую композицию;prev_track
+переключи на прошлый;prev_track
+назад песню;prev_track
+верни песню назад;prev_track
+пред трек пж;prev_track
+давай прошлый;prev_track
+верни назад сейчас;prev_track
+назад щас;prev_track
+верни предыдущий трек плиз;prev_track
+предыдущую включай;prev_track
+назад включи;prev_track
+верни обратно трек;prev_track
+верни предыдущий бит;prev_track
+назад музон;prev_track
+верни тот бит;prev_track
+поставь предыдущий трек;prev_track
+предыдущий уже;prev_track
+назад уже;prev_track
+верни предыдущую ща;prev_track
+го назад щас;prev_track
+переключи назад пж;prev_track
+назад трек плиз;prev_track
+верни назад быстро;prev_track
+предыдущую быстрее;prev_track
+назад давай уже;prev_track
+верни прошлую уже;prev_track
+врубай предыдущий трек;prev_track
+предыдущий трек го;prev_track
+давай вернемся;prev_track
+верни назад пожалуйста;prev_track
+верни прошлую песню пж;prev_track
+назад песню плиз;prev_track
+переключи на пред;prev_track
+предыдущий трек сейчас;prev_track
+назад сейчас;prev_track
+верни предыдущую композицию пж;prev_track
+го пред трек;prev_track
+назад один трек;prev_track
+верни на один назад;prev_track
+предыдущую песню включи;prev_track
+верни прошлый бит;prev_track
+назад бит;prev_track
+верни старый трек;prev_track
+поставь старую песню;prev_track
+верни старую композицию;prev_track
+назад старый трек;prev_track
+переключи на старый;prev_track
+предыдущий трек пжл;prev_track
+верни обратно песню;prev_track
+назад обратно;prev_track
+верни обратно сейчас;prev_track
+предыдущую сейчас;prev_track
+назад немедленно;prev_track
+верни моментально;prev_track
+го обратно;prev_track
+верни тот самый;prev_track
+назад тот трек;prev_track
+верни трек который был;prev_track
+предыдущий который играл;prev_track
+верни что играло;prev_track
+назад что играло;prev_track
+переключи назад быстро;prev_track
+предыдущую давай уже;prev_track
+верни прошлую щас;prev_track
+назад трек давай;prev_track
+
+поставь на паузу;pause
+пауза;pause
+останови музыку;pause
+выключи музыку;pause
+стоп музыка;pause
+хватит играть;pause
+поставь трек на паузу;pause
+останови трек;pause
+пауза пж;pause
+пауза пожалуйста;pause
+останови пожалуйста;pause
+выключи пока;pause
+сделай тишину;pause
+хватит уже;pause
+стоп;pause
+музыку на паузу;pause
+поставь на паузу музыку;pause
+останови воспроизведение;pause
+выруби музыку;pause
+пауза сейчас;pause
+стопни музыку;pause
+останови сейчас;pause
+поставь паузу;pause
+выключи звук;pause
+прекрати играть;pause
+не играй;pause
+давай паузу;pause
+сделай паузу;pause
+пауза давай;pause
+стопни трек;pause
+музыку стоп;pause
+выключи трек;pause
+останови это;pause
+пауза щас;pause
+пауза быстро;pause
+стопни уже;pause
+выключай;pause
+прекращай;pause
+не надо играть;pause
+тихо сделай;pause
+тишину давай;pause
+музыку офф;pause
+пауза плз;pause
+поставь на паузу плиз;pause
+останови трек пж;pause
+стопни пж;pause
+выключи пж;pause
+пауза моментально;pause
+останови немедленно;pause
+стопни сейчас;pause
+выключи сейчас;pause
+прекрати сейчас;pause
+пауза уже;pause
+хватит уже играть;pause
+не хочу слушать;pause
+выруби это;pause
+поставь паузу уже;pause
+стопни музыку сейчас;pause
+пауза срочно;pause
+выключи срочно;pause
+останови срочно;pause
+давай тишину;pause
+сделай тише стоп;pause
+музыку убери;pause
+убери музыку;pause
+выключи нах;pause
+пауза нах;pause
+стоп нах;pause
+останови нафиг;pause
+выключи нафиг;pause
+пауза нафиг;pause
+стопни нафиг;pause
+поставь паузу щас;pause
+останови это сейчас;pause
+выключи трек сейчас;pause
+не играй сейчас;pause
+хватит музыки;pause
+музыки хватит;pause
+пауза музыку;pause
+поставь музыку пауза;pause
+останови музыку плиз;pause
+выключи музыку пжл;pause
+пауза музыку пж;pause
+стопни музыку пж;pause
+выключи звук сейчас;pause
+убери звук;pause
+без музыки;pause
+музыка стоп;pause
+останови звук;pause
+звук офф;pause
+sound off;pause
+pause music;pause
+pause;pause
+stop music;pause
+
+продолжи;resume
+продолжи музыку;resume
+сними с паузы;resume
+включи обратно;resume
+давай дальше;resume
+играй дальше;resume
+возобнови;resume
+возобнови музыку;resume
+продолжай играть;resume
+вруби обратно;resume
+верни музыку;resume
+давай продолжим;resume
+музыку обратно;resume
+играй;resume
+включай;resume
+с паузы снимай;resume
+продолжи трек;resume
+запусти дальше;resume
+давай музон;resume
+врубай;resume
+верни звук;resume
+включи музыку;resume
+запускай;resume
+музыка давай;resume
+продолжай пж;resume
+сними паузу;resume
+вруби музыку;resume
+продолжай сейчас;resume
+играй сейчас;resume
+включи щас;resume
+сними с паузы пж;resume
+давай дальше музыку;resume
+продолжай уже;resume
+играй уже;resume
+включай уже;resume
+возобнови сейчас;resume
+запусти музыку;resume
+давай звук;resume
+верни музыку обратно;resume
+включи обратно пж;resume
+с паузы давай;resume
+го музыка;resume
+врубай щас;resume
+продолжай быстро;resume
+играй быстрее;resume
+включай быстро;resume
+возобнови быстро;resume
+давай включай;resume
+запускай сейчас;resume
+верни звук сейчас;resume
+музыку включи;resume
+продолжи музыку плиз;resume
+сними с паузы плиз;resume
+включи музыку пжл;resume
+играй пж;resume
+давай уже включай;resume
+вруби уже;resume
+продолжи немедленно;resume
+играй немедленно;resume
+включай немедленно;resume
+возобнови немедленно;resume
+давай обратно;resume
+верни обратно музыку;resume
+запусти обратно;resume
+сними паузу сейчас;resume
+давай дальше трек;resume
+продолжай трек;resume
+играй трек;resume
+включи трек обратно;resume
+музыку назад;resume
+продолжай музон;resume
+врубай музон;resume
+го включай;resume
+давай звук обратно;resume
+с паузы включи;resume
+продолжи играть сейчас;resume
+играй дальше пж;resume
+включи обратно сейчас;resume
+возобнови пж;resume
+давай уже музыку;resume
+верни музыку пж;resume
+врубай пж;resume
+запусти пж;resume
+играй музыку;resume
+музыка играй;resume
+продолжи воспроизведение;resume
+включи воспроизведение;resume
+resume music;resume
+resume;resume
+play;resume
+play music;resume
+
+сделай громче;volume_up
+прибавь звук;volume_up
+громкость вверх;volume_up
+увеличь громкость;volume_up
+сделай погромче;volume_up
+давай громче;volume_up
+громче пж;volume_up
+громче пожалуйста;volume_up
+чуть громче;volume_up
+прибавь немного;volume_up
+еще громче;volume_up
+громкость прибавь;volume_up
+подними звук;volume_up
+усиль звук;volume_up
+добавь громкости;volume_up
+накрути громкость;volume_up
+громкость плюс;volume_up
+volume up;volume_up
+увеличь звук;volume_up
+громче сделай;volume_up
+прибавь пж;volume_up
+сделай громче сейчас;volume_up
+громче щас;volume_up
+прибавь сейчас;volume_up
+подними сейчас;volume_up
+громкость повысь;volume_up
+повысь звук;volume_up
+чутка громче;volume_up
+еще чуть;volume_up
+добавь еще;volume_up
+сильнее звук;volume_up
+громкость ап;volume_up
+подкрути громкость;volume_up
+прибавь звук плиз;volume_up
+громче плиз;volume_up
+громкость пжл;volume_up
+давай прибавь;volume_up
+прибавь уже;volume_up
+громче уже;volume_up
+увеличь немного;volume_up
+прибавь на чуть;volume_up
+подними на чуть;volume_up
+еще немного громче;volume_up
+добавь громкости пж;volume_up
+сделай погромче плиз;volume_up
+усиль пж;volume_up
+накрути пж;volume_up
+громкость вверх пж;volume_up
+чуть-чуть громче;volume_up
+прибавь звук немного;volume_up
+повысь немного;volume_up
+подними немного;volume_up
+громче давай уже;volume_up
+давай еще громче;volume_up
+прибавь нормально;volume_up
+громче норм;volume_up
+накрути чуть;volume_up
+добавь звука;volume_up
+подними звук пж;volume_up
+громкость увеличь пж;volume_up
+усиль звук пж;volume_up
+сделай громче быстро;volume_up
+громче быстрее;volume_up
+прибавь быстро;volume_up
+подними быстро;volume_up
+громкость выше;volume_up
+сделай звук выше;volume_up
+давай звук выше;volume_up
+чуть громче сделай;volume_up
+еще каплю громче;volume_up
+прибавь каплю;volume_up
+громкость апни;volume_up
+апни звук;volume_up
+громче сделай пж;volume_up
+прибавь звук уже;volume_up
+громкость добавь;volume_up
+подними звук уже;volume_up
+усиль звук уже;volume_up
+накрути громкость уже;volume_up
+сделай громче немедленно;volume_up
+прибавь немедленно;volume_up
+подними немедленно;volume_up
+громче срочно;volume_up
+прибавь срочно;volume_up
+подними срочно;volume_up
+сделай погромче щас;volume_up
+громче щас давай;volume_up
+прибавь звук щас;volume_up
+подними звук щас;volume_up
+громкость на максимум;volume_up
+сделай максимум;volume_up
+вруби громче;volume_up
+давай баса;volume_up
+навали звука;volume_up
+усиль музон;volume_up
+
+сделай тише;volume_down
+убавь звук;volume_down
+громкость вниз;volume_down
+уменьши громкость;volume_down
+сделай потише;volume_down
+давай тише;volume_down
+тише пж;volume_down
+тише пожалуйста;volume_down
+чуть тише;volume_down
+убавь немного;volume_down
+еще тише;volume_down
+громкость убавь;volume_down
+опусти звук;volume_down
+ослабь звук;volume_down
+сбавь громкость;volume_down
+скрути громкость;volume_down
+громкость минус;volume_down
+volume down;volume_down
+уменьши звук;volume_down
+тише сделай;volume_down
+убавь пж;volume_down
+сделай тише сейчас;volume_down
+тише щас;volume_down
+убавь сейчас;volume_down
+опусти сейчас;volume_down
+громкость понизь;volume_down
+понизь звук;volume_down
+чутка тише;volume_down
+еще чуть тише;volume_down
+сбавь еще;volume_down
+слабее звук;volume_down
+громкость даун;volume_down
+подскрути вниз;volume_down
+убавь звук плиз;volume_down
+тише плиз;volume_down
+громкость пжл вниз;volume_down
+давай убавь;volume_down
+убавь уже;volume_down
+тише уже;volume_down
+уменьши немного;volume_down
+убавь на чуть;volume_down
+опусти на чуть;volume_down
+еще немного тише;volume_down
+сбавь громкости пж;volume_down
+сделай потише плиз;volume_down
+ослабь пж;volume_down
+скрути пж;volume_down
+громкость вниз пж;volume_down
+чуть-чуть тише;volume_down
+убавь звук немного;volume_down
+понизь немного;volume_down
+опусти немного;volume_down
+тише давай уже;volume_down
+давай еще тише;volume_down
+убавь нормально;volume_down
+тише норм;volume_down
+скрути чуть;volume_down
+убери громкости;volume_down
+опусти звук пж;volume_down
+громкость уменьшай пж;volume_down
+ослабь звук пж;volume_down
+сделай тише быстро;volume_down
+тише быстрее;volume_down
+убавь быстро;volume_down
+опусти быстро;volume_down
+громкость ниже;volume_down
+сделай звук ниже;volume_down
+давай звук ниже;volume_down
+чуть тише сделай;volume_down
+еще каплю тише;volume_down
+убавь каплю;volume_down
+громкость даунни;volume_down
+даунни звук;volume_down
+тише сделай пж;volume_down
+убавь звук уже;volume_down
+громкость убери;volume_down
+опусти звук уже;volume_down
+ослабь звук уже;volume_down
+скрути громкость уже;volume_down
+сделай тише немедленно;volume_down
+убавь немедленно;volume_down
+опусти немедленно;volume_down
+тише срочно;volume_down
+убавь срочно;volume_down
+опусти срочно;volume_down
+сделай потише щас;volume_down
+тише щас давай;volume_down
+убавь звук щас;volume_down
+опусти звук щас;volume_down
+громкость на минимум;volume_down
+сделай минимум;volume_down
+выруби почти;volume_down
+сбавь до нуля;volume_down
+почти не слышно сделай;volume_down
+сильно тише;volume_down
+убавь конкретно;volume_down
+приглуши;volume_down
+
+поставь заново;replay
+повтори трек;replay
+включи еще раз;replay
+заново давай;replay
+перезапусти трек;replay
+сначала включи;replay
+играй сначала;replay
+давай сначала;replay
+еще раз трек;replay
+повтори песню;replay
+запусти заново;replay
+начни сначала;replay
+рестарт трека;replay
+replay;replay
+еще разок;replay
+крути заново;replay
+давай по новой;replay
+по новой трек;replay
+снова включи;replay
+играй снова;replay
+включи заново;replay
+с начала трек;replay
+заново песню;replay
+давай еще раз;replay
+поставь еще раз;replay
+перезапуск;replay
+запусти с начала;replay
+начни трек сначала;replay
+вруби заново;replay
+повтори сейчас;replay
+заново щас;replay
+еще раз сейчас;replay
+по новой щас;replay
+сначала щас;replay
+перезапусти сейчас;replay
+повтори пж;replay
+заново пж;replay
+еще раз плиз;replay
+по новой плиз;replay
+сначала пж;replay
+перезапусти пж;replay
+повтори быстро;replay
+заново быстро;replay
+еще раз быстро;replay
+по новой быстро;replay
+сначала быстро;replay
+перезапусти быстро;replay
+повтори уже;replay
+заново уже;replay
+еще раз уже;replay
+по новой уже;replay
+сначала уже;replay
+перезапусти уже;replay
+повтори немедленно;replay
+заново немедленно;replay
+еще раз немедленно;replay
+по новой немедленно;replay
+сначала немедленно;replay
+перезапусти немедленно;replay
+повтори трек сейчас;replay
+заново трек сейчас;replay
+еще раз трек сейчас;replay
+по новой трек сейчас;replay
+сначала трек сейчас;replay
+перезапусти трек сейчас;replay
+повтори песню сейчас;replay
+заново песню сейчас;replay
+еще раз песню сейчас;replay
+по новой песню сейчас;replay
+сначала песню сейчас;replay
+перезапусти песню сейчас;replay
+верни на начало;replay
+в начало трека;replay
+отмотай в начало;replay
+начало давай;replay
+в начало песни;replay
+сбрось на начало;replay
+перемотай в начало;replay
+давай начало;replay
+сначала играй;replay
+играй с начала;replay
+начни заново;replay
+запусти по новой;replay
+снова сначала;replay
+с начала плиз;replay
+сначала пж;replay
+начало сейчас;replay
+перемотай назад в начало;replay
+откатись в начало;replay
+верни сначала;replay
+сбрось трек;replay
+restart track;replay
+play again;replay
+again;replay
