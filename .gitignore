@@ -3,6 +3,7 @@ ollama-env/
 venv/
 env/
 .env
+Jarvis_v1/
 
 # Кэш Python (временные файлы компиляции)
 __pycache__/
