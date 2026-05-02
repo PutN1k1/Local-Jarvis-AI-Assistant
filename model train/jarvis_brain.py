@@ -2,9 +2,9 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 
-MODEL_PATH = "Jarvis_v1\checkpoint-1200"
+MODEL_PATH = "Jarvis_v2\checkpoint-500"
 
-tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2")
+tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
 
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 
@@ -30,7 +30,7 @@ def get_intent(phrase: str) -> str:
         prob_value = prob.item() # Переводим тензор в обычное число Python
         
         # Если уверенность больше 40% (порог можно менять)
-        if prob_value > 0.7:
+        if prob_value > 0.5:
             intent_name = model.config.id2label[class_id]
             detected_intents[intent_name] = prob_value
             

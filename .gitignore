@@ -4,6 +4,7 @@ venv/
 env/
 .env
 Jarvis_v1/
+Jarvis_v2/
 
 # Кэш Python (временные файлы компиляции)
 __pycache__/

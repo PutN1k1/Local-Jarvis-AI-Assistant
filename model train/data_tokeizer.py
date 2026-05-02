@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 import torch
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import numpy as np
+import numpy
 
 data_to_train_from_csv = pd.read_csv('model train/train_data.csv',
                                      encoding='UTF-8',
@@ -13,41 +13,41 @@ data_to_train_from_csv = pd.read_csv('model train/train_data.csv',
                                      )
 label2id = {}
 id2label = {}
-unique_intents = sorted(list(set(data_to_train_from_csv.intents)))
+
+all_raw_intents = data_to_train_from_csv.intents.astype(str).tolist()
+unique_intents = set()
+for item in all_raw_intents:
+    for i in item.split(','):
+        unique_intents.add(i.strip())
+
+unique_intents = sorted(list(unique_intents))
 
 for id,intent in enumerate(unique_intents):
     label2id[intent.strip()] = id
     id2label[id] = intent.strip()
 
-data_to_train_from_csv.replace({'intents':label2id},inplace=True)
-#print(data_to_train_from_csv)
+def get_one_hot_labels(intent_string,label2id,num_lables = 8):
+    one_hot = [0.0] * num_lables
+    for intent in str(intent_string).split(','):
+        intent = intent.strip()
+        if intent in label2id:
+            one_hot[label2id[intent]] = 1.0
+    return one_hot
 
-tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2")
-
-'''for phrase,intent in zip(data_to_train_from_csv.phrase.head(1),data_to_train_from_csv.intents.head(1)):
-    print(phrase,intent)
-    encoded_phrase = tokenizer(phrase)
-    print(encoded_phrase)'''
-    
-'''pharses = list(data_to_train_from_csv.phrase.head(5))
-encoded_phrases = tokenizer(pharses, padding = True,truncation = True,return_tensors = "pt")
-print(encoded_phrases['input_ids'])
-print(encoded_phrases['token_type_ids'])
-print(encoded_phrases['attention_mask'])'''
+tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
 
 all_phrases = data_to_train_from_csv['phrase'].tolist()
-all_intents = data_to_train_from_csv['intents'].tolist()
+all_intents = [get_one_hot_labels(x,label2id) for x in data_to_train_from_csv['intents']]
 
-train_texts, eval_texts, train_labels, eval_labels = train_test_split(all_phrases,all_intents,train_size=0.8,random_state=42, stratify=all_intents)
+train_texts, eval_texts, train_labels, eval_labels = train_test_split(all_phrases,all_intents,train_size=0.8,random_state=42)
 
-#print(np.bincount(train_labels))
-#print(np.bincount(eval_labels))
 
 encodings_train = tokenizer(train_texts,padding = True,truncation = True,return_tensors = "pt", max_length = 32)
 encodings_eval = tokenizer(eval_texts,padding = True,truncation = True,return_tensors = "pt", max_length = 32)
 
-'''for key, val in encodings.items():
-    item = {key : val[0]for key, val in encodings.items()}
+'''for key, val in encodings_train.items():
+    
+    item = {key : val[0]for key, val in encodings_train.items()}
 print(item)'''
 
 class JarvisIntentDataset(Dataset):
@@ -58,7 +58,7 @@ class JarvisIntentDataset(Dataset):
     def __getitem__(self, idx):
         item = {key : val[idx] for key, val in self.encodings.items()}
         
-        item['labels'] = torch.tensor(self.labels[idx])
+        item['labels'] = torch.tensor(self.labels[idx],dtype=torch.float32)
         
         return item
     
@@ -66,26 +66,34 @@ class JarvisIntentDataset(Dataset):
         return len(self.labels)
 
 
-model = AutoModelForSequenceClassification.from_pretrained("cointegrated/rubert-tiny2", num_labels=8, id2label=id2label, label2id=label2id)
+model = AutoModelForSequenceClassification.from_pretrained(
+    "DeepPavlov/rubert-base-cased", 
+    num_labels=8, 
+    id2label=id2label, 
+    label2id=label2id,
+    problem_type = "multi_label_classification"
+)
 
 train_dataset = JarvisIntentDataset(encodings_train,train_labels)
 eval_dataset = JarvisIntentDataset(encodings_eval,eval_labels)
 
 def compute_metrics(eval_pred):
     logits,labels = eval_pred
-    predictions = np.argmax(logits,axis = -1)
+    
+    probabilities = torch.sigmoid(torch.tensor(logits)).numpy()
+    
+    predictions = (probabilities > 0.5).astype(int)
     
     acc = accuracy_score(labels,predictions)
     return {"accuracy": acc}
 
- 
 training_args = TrainingArguments(
-    output_dir="Jarvis_v1",
+    output_dir="Jarvis_v2",
     learning_rate=5e-5,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
-    num_train_epochs=30,
-    weight_decay=0.01,
+    num_train_epochs=10,
+    weight_decay=0.1,
     eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
