@@ -1,8 +1,8 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import numpy as np
 
-MODEL_PATH = "Jarvis_v1\checkpoint-1020"
+
+MODEL_PATH = "Jarvis_v1\checkpoint-1200"
 
 tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2")
 
@@ -18,13 +18,23 @@ def get_intent(phrase: str) -> str:
     with torch.no_grad():
         outputs = model(**inputs)
         
-    logits = outputs.logits
+    logits = outputs.logits[0]
+
+    probabilities = torch.sigmoid(logits)
+    print(probabilities)
+
+    detected_intents = {}
     
-    predicted_class_id = np.argmax(logits.numpy(), axis=-1)[0]
-    
-    intent = model.config.id2label[predicted_class_id]
-    
-    return intent
+    # Пробегаемся по всем вероятностям
+    for class_id, prob in enumerate(probabilities):
+        prob_value = prob.item() # Переводим тензор в обычное число Python
+        
+        # Если уверенность больше 40% (порог можно менять)
+        if prob_value > 0.7:
+            intent_name = model.config.id2label[class_id]
+            detected_intents[intent_name] = prob_value
+            
+    return detected_intents
 
 # --- БЛОК ТЕСТИРОВАНИЯ ---
 if __name__ == "__main__":
@@ -35,4 +45,4 @@ if __name__ == "__main__":
             break
             
         intent = get_intent(text)
-        print(f"-> Распознан интент: [{intent}]\n")
+        print(f"-> Распознан интенты: {intent}\n")

@@ -66,7 +66,7 @@ class JarvisIntentDataset(Dataset):
         return len(self.labels)
 
 
-model = AutoModelForSequenceClassification.from_pretrained("cointegrated/rubert-tiny2", num_labels=7, id2label=id2label, label2id=label2id)
+model = AutoModelForSequenceClassification.from_pretrained("cointegrated/rubert-tiny2", num_labels=8, id2label=id2label, label2id=label2id)
 
 train_dataset = JarvisIntentDataset(encodings_train,train_labels)
 eval_dataset = JarvisIntentDataset(encodings_eval,eval_labels)

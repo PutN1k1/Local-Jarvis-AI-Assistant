@@ -1,16 +1,14 @@
 from ollama import pull,chat
 from pynput.keyboard import Key,Controller
 import argparse
-import random
-import re
-import pymorphy3
-#from nltk.util import ngrams
 from rich.console import Console
 from rich.panel import Panel
 from rich.live import Live
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.text import Text
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 console = Console()
 
@@ -149,159 +147,36 @@ class LLMResponder():
         return self.history
 
 class IntentDetector():
-    def __init__(self, morph: pymorphy3.MorphAnalyzer):
-        self.WEIGHTS = {
-            "anchor": 1.0, 
-            "action": 0.8, 
-            "object": 0.6, 
-            "negation": -1.5
-        }
+    def __init__(self, model_path: str):
+        self.tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2")
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+        self.model.eval()
         
-        self.INTENT_CONFIG = {
-            'next_track': {
-                ('следующий',): self.WEIGHTS["anchor"],
-                ('next',): self.WEIGHTS["anchor"],
-                ('скип',): self.WEIGHTS["anchor"],
-                ('skip',): self.WEIGHTS["anchor"],
-                ('пропустить',): self.WEIGHTS["anchor"],
-                ('переключить',): self.WEIGHTS["anchor"],
-                ('включить', 'другой'): self.WEIGHTS["action"],
-                ('не', 'нравиться'): self.WEIGHTS["object"],
-                ('давать', 'другой'): self.WEIGHTS["object"],
-                ('не', 'переключать'): self.WEIGHTS["negation"],
-                ('не', 'надо', 'следующий'): self.WEIGHTS["negation"],
-                ('нет', 'оставить'): -1.0, # Оставлен литералом, так как выбивается из общей логики
-            },
-        
-            'prev_track': {
-                ('предыдущий',): self.WEIGHTS["anchor"],
-                ('previous',): self.WEIGHTS["anchor"],
-                ('назад',): self.WEIGHTS["action"],
-                ('вернуть',): self.WEIGHTS["action"],
-                ('прошлый',): self.WEIGHTS["object"],
-                ('back',): self.WEIGHTS["anchor"], 
-                ('вернуть', 'назад'): self.WEIGHTS["anchor"],
-                ('не', 'возвращать'): self.WEIGHTS["negation"],
-                ('не', 'назад'): -1.2,
-            },
-            
-            'pause': {
-                ('пауза',): self.WEIGHTS["anchor"],
-                ('стоп',): self.WEIGHTS["anchor"], 
-                ('stop',): self.WEIGHTS["anchor"], 
-                ('остановить',): self.WEIGHTS["anchor"], 
-                ('хватить',): self.WEIGHTS["object"], 
-                ('тишина',): self.WEIGHTS["action"], 
-                ('выключить', 'музыка'): self.WEIGHTS["anchor"], 
-                ('прекратить',): self.WEIGHTS["action"], 
-                ('не', 'стоп'): self.WEIGHTS["negation"], 
-                ('не', 'пауза'): self.WEIGHTS["negation"], 
-                ('не', 'выключать'): self.WEIGHTS["negation"], 
-                ('играть', 'далёкий'): -0.8,
-            }, 
-            
-            'resume': {
-                ('продолжить',): self.WEIGHTS["anchor"], 
-                ('играть',): self.WEIGHTS["anchor"], 
-                ('play',): self.WEIGHTS["anchor"], 
-                ('запустить',): self.WEIGHTS["action"],
-                ('снять', 'с', 'пауза'): self.WEIGHTS["anchor"],
-                ('включить', 'обратно'): self.WEIGHTS["anchor"], 
-                ('не', 'включать'): self.WEIGHTS["negation"], 
-                ('не', 'продолжать'): self.WEIGHTS["negation"],
-                ('пусть', 'молчать'): -0.8,
-            }, 
-            
-            'volume_up': {
-                ('громкий',): self.WEIGHTS["anchor"],
-                ('прибавить',): self.WEIGHTS["anchor"],
-                ('добавить', 'звук'): self.WEIGHTS["anchor"],
-                ('тихо',): self.WEIGHTS["object"],
-                ('увеличить', 'громкость'): self.WEIGHTS["anchor"],
-                ('плохо', 'слышный'): self.WEIGHTS["object"],
-                ('louder',): self.WEIGHTS["anchor"],
-                ('не', 'прибавлять'): self.WEIGHTS["negation"],
-                ('не', 'громко'): -1.2,
-                ('хватить', 'громкость'): -1.0,
-            },
-            
-            'volume_down': {
-                ('тихий',): self.WEIGHTS["anchor"], 
-                ('уменьшить',): self.WEIGHTS["anchor"], 
-                ('убавить',): self.WEIGHTS["anchor"], 
-                ('сделать', 'тихий'): self.WEIGHTS["anchor"],
-                ('приглушить',): self.WEIGHTS["anchor"], 
-                ('снизить', 'громкость'): self.WEIGHTS["anchor"],
-                ('очень', 'громко'): self.WEIGHTS["object"], 
-                ('не', 'убавлять'): self.WEIGHTS["negation"], 
-                ('не', 'тихо'): -1.2,
-                ('оставить', 'громкость'): -0.8,
-            }, 
-            
-            'replay': {
-                ('заново',): self.WEIGHTS["anchor"], 
-                ('повторить', 'трек'): self.WEIGHTS["anchor"], 
-                ('с', 'начало'): self.WEIGHTS["anchor"], 
-                ('ещё', 'раз'): self.WEIGHTS["object"], 
-                ('replay',): self.WEIGHTS["anchor"], 
-                ('не', 'повторять'): self.WEIGHTS["negation"], 
-                ('не', 'надо', 'заново'): self.WEIGHTS["negation"],
-            }
-        }
-        
-        # "Выворачиваем" INTENT_CONFIG для быстрого поиска по keyword
-        self.FLAT_CONFIG = {}
-        for intent, keywords in self.INTENT_CONFIG.items():
-            for keyword,weight in keywords.items():
-                self.FLAT_CONFIG[keyword] = {"intent": intent, "weight": weight}
-        
-        self.STOP_WORDS = {'пожалуйста', 'будь', 'добр', 'джарвис', 'хотеть', 'мочь', 'бы'}
-        
-        self.morph = morph
+    def detect_intents(self, user_input: str) -> dict[str,float]:
+        """Принимает текст, возвращает строковый интент"""
     
-    def _get_decay_factor(self,index,length_of_user_input):
-        return max(0.4, 1.0 - ((length_of_user_input-index)*0.05))
-    
-    def detect_intents(self, user_input: str) -> list[str]:
-        FLAT_CONFIG = self.FLAT_CONFIG
-        STOP_WORDS = self.STOP_WORDS
+        inputs = self.tokenizer(user_input, return_tensors = "pt", truncation = True, max_length = 32, padding = True)
         
-        # Поиск валидных слов в тексте и их приведение в normal_form
-        words_to_process = [
-            parsed_form 
-            for word in re.findall(r'\w+', user_input.lower()) 
-            if (parsed_form := self.morph.parse(word)[0].normal_form) not in STOP_WORDS
-        ]
-        
-        # Словарь: {ngrama: индекс_в_тексте}
-        user_ngrams = {}
-        total_words = len(words_to_process)
-        
-        for n in range(1,4):
-            for i in range(total_words-n+1):
-                ngram = tuple(words_to_process[i:i+n])
-                
-                user_ngrams[ngram] = i
-        
-        
-        scores = {intent: 0.0 for intent in self.INTENT_CONFIG}
-        
-        for ngram, position in user_ngrams.items():
-            if ngram in FLAT_CONFIG:
-                match_data = FLAT_CONFIG[ngram]
-                intent = match_data["intent"]
-                weight = match_data["weight"]
-                
-                decay_factor = self._get_decay_factor(position,total_words)
-                scores[intent] += weight*decay_factor
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            
+        logits = outputs.logits[0]
 
-        intents_to_process = {
-            intent: score 
-            for intent, score in scores.items()
-            if score >= 0.4
-        }
+        probabilities = torch.sigmoid(logits)
+
+        detected_intents = {}
         
-        return intents_to_process
+        # Пробегаемся по всем вероятностям
+        for class_id, prob in enumerate(probabilities):
+            prob_value = prob.item() 
+            
+            # Если уверенность больше 40% (порог можно менять)
+            if prob_value > 0.7:
+                intent_name = self.model.config.id2label[class_id]
+                detected_intents[intent_name] = prob_value
+                
+        return detected_intents
+    
 
 class IntentResolver():
     def __init__(self):
@@ -380,13 +255,13 @@ class ActionExecutor():
                 action()
 
 class JarvisCore(): # Jarvis Agent, specializes in music
-    def __init__(self, model: str, music: Music, morph: pymorphy3.MorphAnalyzer):  
+    def __init__(self, model: str, music: Music):  
         self.music = music
         
         self.history = []
         
-        self.LLMResponder = LLMResponder(model,self.history)
-        self.IntentDetector = IntentDetector(morph)
+        self.LLMResponder = LLMResponder(model, self.history)
+        self.IntentDetector = IntentDetector(model_path= "Jarvis_v1\checkpoint-1200")
         self.IntentResolver = IntentResolver()
         self.ActionExecutor = ActionExecutor(music)
         
@@ -403,22 +278,27 @@ class JarvisCore(): # Jarvis Agent, specializes in music
             )        
         while True:
             user_input = Prompt.ask("[bold cyan]>>>[/bold cyan]")
-            if user_input.lower() in ['exit', 'quit', 'выход']:
+            if user_input.lower() in ['exit', 'quit', 'выход','q', 'й']:
                 console.print("[bold red]Система деактивирована.[/bold red]")
                 break
             
             detected_intents = self.IntentDetector.detect_intents(user_input)
             resolved_intents = self.IntentResolver.resolve(detected_intents)
-            is_log = False
-            if resolved_intents:
-                self.ActionExecutor.execute(resolved_intents)
-                is_log = True
-                user_input = f"""
-                    USER_INPUT: "{user_input}"
-                    ACTIONS_PERFORMED: {resolved_intents}
-                    """
+            action_intents = [intent for intent in resolved_intents if intent != 'other']
             
-            self.history = self.LLMResponder.generate(user_input,is_log)
+            if action_intents:
+                self.ActionExecutor.execute(action_intents)
+                is_log = True
+                
+                prompt_for_llm = f"""
+                    USER_INPUT: "{user_input}"
+                    ACTIONS_PERFORMED: {action_intents}
+                    """
+            else:
+                is_log = False
+                prompt_for_llm = user_input
+            
+            self.history = self.LLMResponder.generate(prompt_for_llm, is_log)
             
     
 def main():
@@ -432,10 +312,10 @@ def main():
         
     
     music = Music()
-    morph = pymorphy3.MorphAnalyzer()
-    jarvis = JarvisCore(model = model, music = music, morph = morph)
+    jarvis = JarvisCore(model = model, music = music)
     parser = argparse.ArgumentParser()
     jarvis.handle_input()
+    
     subparsers = parser.add_subparsers(dest="command", help='Available commands')
     
     music_next_parser = subparsers.add_parser("next", help="plays next track")

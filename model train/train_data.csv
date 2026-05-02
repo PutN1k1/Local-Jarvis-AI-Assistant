@@ -667,3 +667,138 @@ replay;replay
 restart track;replay
 play again;replay
 again;replay
+
+привет;other
+хай;other
+здарова;other
+как дела;other
+как ты;other
+что делаешь;other
+чем занят;other
+как жизнь;other
+как настроение;other
+что нового;other
+расскажи анекдот;other
+пошути;other
+скажи что-нибудь;other
+мне скучно;other
+давай поговорим;other
+что думаешь;other
+как погода;other
+какая сегодня погода;other
+идет ли дождь;other
+сколько градусов;other
+который час;other
+какое сегодня число;other
+какой день недели;other
+ты кто;other
+что ты умеешь;other
+расскажи о себе;other
+кто тебя сделал;other
+ты живой;other
+ты бот;other
+ты человек;other
+лол;other
+ахаха;other
+хаха;other
+ммм;other
+эм;other
+ну;other
+эээ;other
+короче;other
+типа того;other
+ну это самое;other
+ладно;other
+ок;other
+окей;other
+понял;other
+ясно;other
+понятно;other
+ага;other
+угу;other
+да;other
+нет;other
+может быть;other
+не знаю;other
+хз;other
+пофиг;other
+как скажешь;other
+ладненько;other
+бывает;other
+норм;other
+нормально;other
+так себе;other
+отстой;other
+круто;other
+класс;other
+жесть;other
+капец;other
+офигеть;other
+ничего себе;other
+да ну;other
+серьезно;other
+правда;other
+невероятно;other
+лол кек;other
+кек;other
+bruh;other
+ok bro;other
+nice;other
+cool;other
+whatever;other
+idk;other
+wtf;other
+omg;other
+pls;other
+help;other
+авпвапва;other
+фывфыв;other
+йцукен;other
+123123;other
+asdfgh;other
+qwerty;other
+ываыва;other
+блаблабла;other
+трали вали;other
+ну короче да;other
+ээ ну;other
+типа ну;other
+это самое;other
+ну давай;other
+да не;other
+ну нет;other
+включи свет;other
+выключи свет;other
+сделай свет ярче;other
+поставь будильник;other
+поставь будильник на 7;other
+разбуди меня завтра;other
+вызови такси;other
+закажи такси;other
+вызови убер;other
+закажи еду;other
+хочу пиццу;other
+закажи суши;other
+открой браузер;other
+запусти хром;other
+открой ютуб;other
+включи видео;other
+найди фильм;other
+скачай фильм;other
+включи сериал;other
+открой вк;other
+зайди в телеграм;other
+напиши сообщение;other
+отправь сообщение;other
+позвони маме;other
+позвони другу;other
+отправь смс;other
+сделай фото;other
+включи камеру;other
+запиши видео;other
+сделай скрин;other
+выключи компьютер;other
+перезагрузи компьютер;other
+открой настройки;other
+удали файл;other
+создай файл;other
