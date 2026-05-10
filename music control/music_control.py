@@ -148,8 +148,8 @@ class LLMResponder():
 
 class IntentDetector():
     def __init__(self, model_path: str):
-        self.tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2")
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2") # Обязательно поменять токенизатор, при использовании другой модели
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path) # А также не забыть поменять модель в model_path
         self.model.eval()
         
     def detect_intents(self, user_input: str) -> dict[str,float]:

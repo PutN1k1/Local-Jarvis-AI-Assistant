@@ -2,7 +2,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 
-MODEL_PATH = "Jarvis_v2\checkpoint-500"
+MODEL_PATH = "Jarvis_v2\checkpoint-1435"
 
 tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
 
