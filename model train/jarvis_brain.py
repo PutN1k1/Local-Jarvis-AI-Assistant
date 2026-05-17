@@ -2,7 +2,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 
-MODEL_PATH = "Jarvis_v2\checkpoint-1435"
+MODEL_PATH = "Jarvis_v2\checkpoint-1791"
 
 tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
 
@@ -45,4 +45,4 @@ if __name__ == "__main__":
             break
             
         intent = get_intent(text)
-        print(f"-> Распознан интенты: {intent}\n")
+        print(f"-> Распознаны интенты: {intent}\n")

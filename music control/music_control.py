@@ -148,7 +148,7 @@ class LLMResponder():
 
 class IntentDetector():
     def __init__(self, model_path: str):
-        self.tokenizer = AutoTokenizer.from_pretrained("cointegrated/rubert-tiny2") # Обязательно поменять токенизатор, при использовании другой модели
+        self.tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased") # Обязательно поменять токенизатор, при использовании другой модели
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path) # А также не забыть поменять модель в model_path
         self.model.eval()
         
@@ -261,7 +261,7 @@ class JarvisCore(): # Jarvis Agent, specializes in music
         self.history = []
         
         self.LLMResponder = LLMResponder(model, self.history)
-        self.IntentDetector = IntentDetector(model_path= "Jarvis_v1\checkpoint-1200")
+        self.IntentDetector = IntentDetector(model_path= "Jarvis_v2\checkpoint-1791")
         self.IntentResolver = IntentResolver()
         self.ActionExecutor = ActionExecutor(music)
         

@@ -1,23 +1,24 @@
-text = """руби следщу;next_track
-следущий трек;next_track
-скипн трек;next_track
-переключи;next_track
-трекк следующий;next_track
-следуцкий трек;next_track
-давай следущий;next_track
-дропн следующий;next_track
-скипп;next_track
-следую трек;next_track
-ну эээ кринж скипни;next_track
-алё голова счас лопнет от басов;next_track
-короче го на следующий;next_track
-скип типа это не то;next_track
-эээ дропни новый трек;next_track"""
+import os
+from dotenv import load_dotenv
 
-with open('C:\\PythonProjects\\Local Jarvis ( AI Assistant )\\model train\\mega_dataset_5k.csv', 'w', encoding='utf-8') as f:
-    try:
-        
-        f.write(text + "\n")
-        print("writed")
-    except Exception as e:
-        print(f"Ошибка: {e}")
+load_dotenv()
+raw_key = os.getenv("GROQ_API_KEY")
+
+if raw_key:
+    print(f"Длина ключа: {len(raw_key)} символов")
+    print(f"Есть ли пробелы в начале/конце: {raw_key != raw_key.strip()}")
+    print(f"Начинается на gsk_: {raw_key.startswith('gsk_')}")
+    
+    # Попробуем сделать запрос с очищенным ключом
+    import requests
+    url = "https://api.groq.com/openai/v1/models"
+    headers = {
+        "Authorization": f"Bearer {raw_key.strip()}",
+        "Content-Type": "application/json"
+    }
+    res = requests.get(url, headers=headers)
+    print(f"Статус ответа: {res.status_code}")
+    if res.status_code != 200:
+        print(f"Текст ошибки: {res.text}")
+else:
+    print("Ключ вообще не найден!")

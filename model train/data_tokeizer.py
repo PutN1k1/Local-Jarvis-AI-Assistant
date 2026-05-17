@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import numpy
 
-data_to_train_from_csv = pd.read_csv('model train/giant_train_data.csv',
+data_to_train_from_csv = pd.read_csv('model train/mega_dataset_5k.csv',
                                      encoding='UTF-8',
                                      delimiter=';',
                                      names=['phrase','intents']
@@ -16,7 +16,7 @@ id2label = {}
 
 all_raw_intents = data_to_train_from_csv.intents.astype(str).tolist()
 unique_intents = set()
-for item in all_raw_intents:
+for i,item in enumerate(all_raw_intents):
     for i in item.split(','):
         unique_intents.add(i.strip())
 
@@ -114,10 +114,10 @@ trainer = Trainer(
 trainer.train()
 
 print("=== Validation Set Evaluation ===")
-eval_results = trainer.evaluate() # По умолчанию берет eval_dataset
+eval_results = trainer.evaluate() 
 print(eval_results)
 
-# 2. Оценка на ТЕСТОВОМ наборе (который модель вообще не видела)
+
 print("\n=== Final Test Set Evaluation ===")
 test_results = trainer.evaluate(test_dataset)
 print(test_results)
